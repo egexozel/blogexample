@@ -2,70 +2,50 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
-
 const app = express();
 
-// Serve static files from the "public" directory
 app.use(express.static(path.join(__dirname, "public")));
-
-// Use the "entries" directory to read text files
-const entriesDirectory = path.join(__dirname, "entries");
+app.use(express.json());
 
 app.get("/", (req, res) => {
-  // Read all the text files in the "entries" directory
-  fs.readdir(entriesDirectory, (err, files) => {
+  fs.readdir("./entries", (err, files) => {
     if (err) throw err;
-
-    // Sort the files by date
-    files.sort((a, b) => {
-      const aDate = moment(a.split(".")[0], "YYYY-MM-DD");
-      const bDate = moment(b.split(".")[0], "YYYY-MM-DD");
-      return aDate.isBefore(bDate) ? -1 : 1;
-    });
-
-    // Read the contents of each file and create an array of entry objects
-    const entries = files.map((file) => {
-      const filePath = path.join(entriesDirectory, file);
-      const content = fs.readFileSync(filePath, "utf8");
-      const [title, ...lines] = content.split("\n");
-
-      return {
-        title,
-        date: moment(file.split(".")[0], "YYYY-MM-DD").format("MMM D, YYYY"),
-        content: lines.map((line) => `<p>${line}</p>`).join(""),
-      };
-    });
-
-    // Render the HTML page and pass the entries to it
-    res.send(`
-      <!DOCTYPE html>
+    files.sort().reverse();
+    let entryList = "";
+    for (let file of files) {
+      const entry = fs.readFileSync(`./entries/${file}`, "utf8");
+      const lines = entry.split("\n");
+      const title = lines.shift();
+      const content = lines.join("\n");
+      const date = moment(file.slice(0, -4), "YYYY-MM-DD").format("MMM DD, YYYY");
+      entryList += `
+        <div class="entry">
+          <h2 class="title">${title}</h2>
+          <p class="content">${content.replace(/\n/g, "</p><p class='entry-content'>")}</p>
+          <p class="date">${date}</p>
+        </div>
+      `;
+    }
+    const html = `
       <html>
         <head>
-          <meta charset="UTF-8">
+          <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link rel="stylesheet" type="text/css" href="/style.css">
-          <title>My Journal</title>
+          <link rel="stylesheet" type="text/css" href="style.css">
+          <title>My Diary</title>
         </head>
         <body>
           <div class="container">
-            ${entries
-              .map(
-                (entry) => `
-              <div class="entry">
-                <h1>${entry.title}</h1>
-                ${entry.content}
-                <p class="date">${entry.date}</p>
-              </div>
-            `
-              )
-              .join("")}
+            ${entryList}
           </div>
         </body>
       </html>
-    `);
+    `;
+    res.send(html);
   });
 });
 
-app.listen(3000, () => {
-  console.log("Server running on http://localhost:3000");
+const port = process.env.PORT || 3000;
+app.listen(port, () => {
+  console.log(`Server started on http://localhost:${port}`);
 });
