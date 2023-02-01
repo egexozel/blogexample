@@ -3,10 +3,17 @@ const fs = require("fs");
 const path = require("path");
 const moment = require("moment");
 const app = express();
+const bodyParser = require('body-parser');
 
 app.use(express.static(path.join(__dirname, "public")));
 app.use(express.json());
 
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+
+
+
+// handle the main page
 app.get("/", (req, res) => {
   fs.readdir("./entries", (err, files) => {
     if (err) throw err;
@@ -58,6 +65,31 @@ app.get("/", (req, res) => {
     `;
     res.send(html);
     console.log("Serving page at: " + moment().format('MMMM Do YYYY, h:mm:ss a'));
+  });
+});
+
+// handle the post page
+
+app.get('/post', (req, res) => {
+  res.sendFile(__dirname + '/views/index.html');
+});
+
+// handle the post request
+
+app.post('/entry', (req, res) => {
+  const date = moment().format('YYYY-MM-DD');
+  const title = req.body.title;
+  const body = req.body.body;
+  const entry = `${title}\n${body}`;
+
+  fs.writeFile(`entries/${date}.txt`, entry, 'utf8', (err) => {
+    if (err) {
+      console.error(err);
+      res.status(500).send('Could not save entry');
+      return;
+    }
+
+    res.send('Entry saved! Go back <a href="/">BACK</a>');
   });
 });
 
