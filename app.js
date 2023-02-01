@@ -1,86 +1,71 @@
-const http = require("http");
+const express = require("express");
 const fs = require("fs");
-const moment = require("moment");
 const path = require("path");
+const moment = require("moment");
 
-const port = 3000;
+const app = express();
 
-const server = http.createServer((req, res) => {
-    if (req.url === "/") {
-        fs.readdir("./entries", (err, files) => {
-            if (err) {
-                console.error("Could not list the directory.", err);
-                process.exit(1);
-            }
+// Serve static files from the "public" directory
+app.use(express.static(path.join(__dirname, "public")));
 
-            const entries = [];
-            files.forEach(file => {
-                fs.readFile(path.join("./entries", file), "utf-8", (err, data) => {
-                    if (err) {
-                        console.error("Could not read file.", err);
-                        process.exit(1);
-                    }
-                    const lines = data.split("\n");
-                    const title = lines[0];
-                    const content = lines.slice(1).join("\n");
-                    const date = moment(file.slice(0, 10), "YYYY-MM-DD");
+// Use the "entries" directory to read text files
+const entriesDirectory = path.join(__dirname, "entries");
 
-                    entries.push({ title, content, date });
+app.get("/", (req, res) => {
+  // Read all the text files in the "entries" directory
+  fs.readdir(entriesDirectory, (err, files) => {
+    if (err) throw err;
 
-                    if (entries.length === files.length) {
-                        entries.sort((a, b) => b.date - a.date);
+    // Sort the files by date
+    files.sort((a, b) => {
+      const aDate = moment(a.split(".")[0], "YYYY-MM-DD");
+      const bDate = moment(b.split(".")[0], "YYYY-MM-DD");
+      return aDate.isBefore(bDate) ? -1 : 1;
+    });
 
-                        res.writeHead(200, { "Content-Type": "text/html; charset=UTF-8" });
-                        res.write(`
-              <html>
-                <head>
-                    <meta name="viewport" content="width=device-width, initial-scale=1">
-                    <meta charset="UTF-8">
-                    <title>Entries</title>
-                  <link rel="stylesheet" type="text/css" href="style.css">
-                </head>
-                <body>
-                  <div class="container">
-            `);
+    // Read the contents of each file and create an array of entry objects
+    const entries = files.map((file) => {
+      const filePath = path.join(entriesDirectory, file);
+      const content = fs.readFileSync(filePath, "utf8");
+      const [title, ...lines] = content.split("\n");
 
-                        entries.forEach(entry => {
-                            res.write(`
-                <div class="entry">
-                  <h1 class="title">${entry.title}</h1>
-                  <p class="content">${entry.content}</p>
-                  <p class="date">${entry.date.format("MMMM D, YYYY")}</p>
-                </div>
-              `);
-                        });
+      return {
+        title,
+        date: moment(file.split(".")[0], "YYYY-MM-DD").format("MMM D, YYYY"),
+        content: lines.map((line) => `<p>${line}</p>`).join(""),
+      };
+    });
 
-                        res.write(`
-                  </div>
-                </body>
-              </html>
-            `);
-                        res.end();
-                    }
-                });
-            });
-        });
-    } else if (req.url === "/style.css") {
-        fs.readFile("./style.css", "utf-8", (err, data) => {
-            if (err) {
-                console.error("Could not read file.", err);
-                process.exit(1);
-            }
-
-            res.writeHead(200, { "Content-Type": "text/css" });
-            res.write(data);
-            res.end();
-        });
-    } else {
-        res.writeHead(404, { "Content-Type": "text/plain" });
-        res.write("404 Not Found");
-        res.end();
-    }
+    // Render the HTML page and pass the entries to it
+    res.send(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="UTF-8">
+          <meta name="viewport" content="width=device-width, initial-scale=1.0">
+          <link rel="stylesheet" type="text/css" href="/style.css">
+          <title>My Journal</title>
+        </head>
+        <body>
+          <div class="container">
+            ${entries
+              .map(
+                (entry) => `
+              <div class="entry">
+                <h1>${entry.title}</h1>
+                ${entry.content}
+                <p class="date">${entry.date}</p>
+              </div>
+            `
+              )
+              .join("")}
+          </div>
+        </body>
+      </html>
+    `);
+  });
 });
 
-server.listen(port, () => {
-    console.log(`Server running at http://localhost:${port}`);
+app.listen(3000, () => {
+  console.log("Server running on http://localhost:3000");
 });
