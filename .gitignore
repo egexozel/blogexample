@@ -1,3 +1,2 @@
 node_modules
-/entries/*.txt
-/entries/2022-12-15.txt
+*.txt
