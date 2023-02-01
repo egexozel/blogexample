@@ -15,32 +15,31 @@ body {
 
 .entry {
     width: 35em;
-    background-color: #f7f7f7;
     padding: 20px;
     text-align: left;
     margin-bottom: 20px;
-    border-radius: 2px;
-    box-shadow: 5px 5px 11px -1px rgba(0,0,0,0.35);
+    border-bottom: 2px dashed #000000;
+    
 }
 
 .title {
     margin: 0;
     padding: 0;
     font-weight: bold;
-    color: #404040;
+    color: #000000;
 }
 
 .content {
     font-size: 1em;
     margin: 0;
     padding-top: 1em;
-    color: #404040;
+    color: #000000;
     line-height: 1.5;
 }
 
 .date {
     font-size: 0.8em;
-    color: #808080;
+    color: #363636;
     margin-top: 10px;
     text-align: right;
 }

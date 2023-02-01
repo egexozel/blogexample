@@ -34,11 +34,24 @@ app.get("/", (req, res) => {
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
           <link rel="stylesheet" type="text/css" href="style.css">
-          <title>My Diary</title>
+          <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+          <title>My Analog Journal</title>
         </head>
         <body>
           <div class="container">
-            ${entryList}
+          <div class="window" style="height:90vh;">
+  <div class="title-bar">
+    <button aria-label="Close" class="close"></button>
+    <h1 class="title">My Analog Journal</h1>
+    <button aria-label="Resize" class="resize"></button>
+  </div>
+  <div class="separator"></div>
+
+  <div class="window-pane" style="height:99vh;">
+  ${entryList}
+  </div>
+</div>
+            
           </div>
         </body>
       </html>
