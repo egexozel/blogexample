@@ -47,7 +47,7 @@ app.get("/", (req, res) => {
   </div>
   <div class="separator"></div>
 
-  <div class="window-pane" style="height:99vh;">
+  <div class="window-pane">
   ${entryList}
   </div>
 </div>
