@@ -13,7 +13,7 @@ app.use(bodyParser.json());
 
 
 
-// handle the main page
+// Handle the main page
 app.get("/", (req, res) => {
   fs.readdir("./entries", (err, files) => {
     if (err) throw err;
@@ -68,14 +68,12 @@ app.get("/", (req, res) => {
   });
 });
 
-// handle the post page
-
+// Handle the entry submission page
 app.get('/post', (req, res) => {
   res.sendFile(__dirname + '/views/index.html');
 });
 
-// handle the post request
-
+// Handle the post request
 app.post('/entry', (req, res) => {
   const date = moment().format('YYYY-MM-DD');
   const title = req.body.title;
@@ -93,6 +91,7 @@ app.post('/entry', (req, res) => {
   });
 });
 
+// Start the server on defined post
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`Server started on http://localhost:${port}`);
