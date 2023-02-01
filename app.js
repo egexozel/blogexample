@@ -14,7 +14,7 @@ app.get("/", (req, res) => {
     let entryList = "";
     console.log("Accessing entries at: " + moment().format('MMMM Do YYYY, h:mm:ss a'));
     for (let file of files) {
-      
+
       const entry = fs.readFileSync(`./entries/${file}`, "utf8");
       const lines = entry.split("\n");
       const title = lines.shift();
