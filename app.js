@@ -19,7 +19,6 @@ app.get("/", (req, res) => {
     if (err) throw err;
     files.sort().reverse();
     let entryList = "";
-    console.log("Accessing entries at: " + moment().format('MMMM Do YYYY, h:mm:ss a'));
     for (let file of files) {
 
       const entry = fs.readFileSync(`./entries/${file}`, "utf8");
@@ -51,6 +50,10 @@ app.get("/", (req, res) => {
     <button aria-label="Close" class="close"></button>
     <h1 class="title">My Analog Journal</h1>
     <button aria-label="Resize" class="resize"></button>
+  </div>
+  <div class="details-bar">
+    <span><a href="/post">New Entry</a></span>
+    <span>About</span>
   </div>
   <div class="separator"></div>
 
@@ -88,6 +91,7 @@ app.post('/entry', (req, res) => {
     }
 
     res.send('Entry saved! Go back <a href="/">BACK</a>');
+    console.log("New entry is saved at: " + moment().format('MMMM Do YYYY, h:mm:ss a') + " Title: " + `${title}` );
   });
 });
 
