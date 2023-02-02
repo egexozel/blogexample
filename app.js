@@ -91,10 +91,11 @@ app.post('/entry', (req, res) => {
       return;
     }
 
-    res.send('Your entry has been published succesfully! <a href="/">Go back!</a>');
-    fetch('https://ntfy.sh/vaioarch', {
+    res.send('Your entry has been published succesfully. <a href="/">Go back</a>');
+    fetch('https://ntfy.sh/myaj', {
       method: 'POST', // PUT works too
-      body: "New entry is saved at: " + moment().format('MMMM Do YYYY, h:mm:ss a') + " Title: " + `${title}`
+      body: "New entry is saved at: " + moment().format('MMMM Do YYYY, h:mm:ss a') + " Title: " + `${title}`,
+      headers: { 'Title': 'New entry has been submitted' }
     });
     console.log("New entry is saved at: " + moment().format('MMMM Do YYYY, h:mm:ss a') + " Title: " + `${title}`);
   });
