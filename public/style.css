@@ -1,6 +1,5 @@
 body {
     font-family: sans-serif;
-    background-color: #f7f7f7;
     margin: 0;
     padding: 0;
 }
@@ -13,9 +12,14 @@ body {
     margin-top: 1em;
 }
 
+.window-pane {
+    height: 84% !important;
+}
+
 .entry {
+    margin: auto;
     width: 35em;
-    padding: 20px;
+    padding: 12px;
     text-align: left;
     margin-bottom: 1em;
     border-bottom: 2px dashed #000000;
@@ -36,6 +40,7 @@ body {
 }
 
 .content {
+    font-family: Geneva;
     font-size: 1em;
     margin: 0;
     padding-top: 1em;
@@ -62,6 +67,10 @@ textarea {
         font-size: 0.9em;
     }
     .entry {
-        width: 80%;
+        width: 90%;
+    }
+
+    .window-pane {
+        padding: 1rem 1rem !important;
     }
 }

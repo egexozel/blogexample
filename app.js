@@ -25,11 +25,11 @@ app.get("/", (req, res) => {
       const lines = entry.split("\n");
       const title = lines.shift();
       const content = lines.join("\n");
-      const date = moment(file.slice(0, -4), "YYYY-MM-DD").format("MMM DD, YYYY");
+      const date = moment(file.slice(0, -4), "YYYY-MM-DD-hh-mm-ss").format("MMM DD, YYYY, hh:mm");
       entryList += `
         <div class="entry">
-          <h2 class="title">${title}</h2>
-          <p class="content">${content.replace(/\n/g, "</p><p class='entry-content'>")}</p>
+          <h2 class="title">${title}</h2><br>
+          <p class="content">${content.replace(/\n/g, "</p><p class='content'>")}</p>
           <p class="date">${date}</p>
         </div>
       `;
@@ -39,13 +39,14 @@ app.get("/", (req, res) => {
         <head>
           <meta charset="utf-8">
           <meta name="viewport" content="width=device-width, initial-scale=1.0">
-          <link rel="stylesheet" type="text/css" href="style.css">
           <link rel="stylesheet" href="https://unpkg.com/@sakun/system.css" />
+          <link rel="stylesheet" type="text/css" href="style.css">
+          
           <title>My Analog Journal</title>
         </head>
         <body>
           <div class="container">
-          <div class="window" style="height:90vh;">
+          <div class="window" style="height:640px;">
   <div class="title-bar">
     <button aria-label="Close" class="close"></button>
     <h1 class="title">My Analog Journal</h1>
@@ -78,7 +79,7 @@ app.get('/post', (req, res) => {
 
 // Handle the post request
 app.post('/entry', (req, res) => {
-  const date = moment().format('YYYY-MM-DD');
+  const date = moment().format('YYYY-MM-DD-hh-mm-ss');
   const title = req.body.title;
   const body = req.body.body;
   const entry = `${title}\n${body}`;
@@ -90,7 +91,7 @@ app.post('/entry', (req, res) => {
       return;
     }
 
-    res.send('Entry saved! Go back <a href="/">BACK</a>');
+    res.send('Your entry has been published succesfully! <a href="/">Go back!</a>');
     fetch('https://ntfy.sh/vaioarch', {
       method: 'POST', // PUT works too
       body: "New entry is saved at: " + moment().format('MMMM Do YYYY, h:mm:ss a') + " Title: " + `${title}`
